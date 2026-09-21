@@ -5,7 +5,7 @@
   <circle cx="28" cy="28" r="7" fill="#fb7185"/><circle cx="52" cy="28" r="7" fill="#fbbf24"/><circle cx="76" cy="28" r="7" fill="#34d399"/>
   <text x="30" y="78" fill="#a7f3d0" font-family="monospace" font-size="20">$ tailcat status</text>
   <text x="30" y="116" fill="#f9fafb" font-family="monospace" font-size="18">status: running (PID 751667)</text>
-  <text x="30" y="150" fill="#d1d5db" font-family="monospace" font-size="18">connection: dev01-vm205</text>
+  <text x="30" y="150" fill="#d1d5db" font-family="monospace" font-size="18">connection: remote-server</text>
   <text x="30" y="184" fill="#d1d5db" font-family="monospace" font-size="18">127.0.0.1:3001 -&gt; 127.0.0.1:3000</text>
   <text x="30" y="234" fill="#93c5fd" font-family="monospace" font-size="18">Tunnel session:</text>
   <text x="30" y="268" fill="#f9fafb" font-family="monospace" font-size="18">public URL: https://example.trycloudflare.com</text>

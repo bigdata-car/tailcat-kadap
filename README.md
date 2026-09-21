@@ -1,10 +1,52 @@
 # tailcat-kadap
 
-KADAP 개발 서버의 포트를 안전하게 연결하고, 필요할 때 외부 미리보기 URL을 만드는 Bash 기반 도구입니다.
+클라이언트와 원격 서버 사이의 포트 연결을 관리하고, 필요할 때 외부 미리보기 URL을 만드는 Bash 기반 도구입니다.
+
+## 요구 사항
+
+- Ubuntu/Debian 계열 클라이언트
+- Bash, SSH, `sshpass`, `curl`, `jq`, `unzip`
+- Tailcat 연결을 실행할 원격 서버와 SSH 계정
+- `tunnel` 사용 시 원격 서버의 `sudo` 권한과 인터넷 연결
+- Quick Tunnel은 테스트용 공개 주소이므로 운영 인증 수단으로 사용하지 않음
+
+## Setup 절차
+
+1. 클라이언트에 저장소를 내려받고 실행 파일을 설치합니다.
+
+   ```bash
+   git clone https://github.com/bigdata-car/tailcat-kadap.git
+   cd tailcat-kadap
+   install -d -m 755 ~/.local/bin
+   install -m 755 tailcat ~/.local/bin/tailcat
+   export PATH="$HOME/.local/bin:$PATH"
+   ```
+
+2. 클라이언트에서 원격 서버 연결을 설정합니다.
+
+   ```bash
+   tailcat setup
+   ```
+
+3. 설정된 포워더를 시작하고 상태를 확인합니다.
+
+   ```bash
+   tailcat start
+   tailcat status
+   ```
+
+4. 외부 공개가 필요할 때만 Quick Tunnel을 시작합니다. 이때 원격 서버에 `cloudflared`가 없으면 설치합니다.
+
+   ```bash
+   tailcat tunnel 3000
+   tailcat status
+   ```
+
+`setup` 단계에서는 원격 서버에 `cloudflared`를 설치하지 않습니다.
 
 ## 목적
 
-- `dev01-vm205`의 내부 서비스를 클라이언트 로컬 포트로 전달
+- 원격 서버의 내부 서비스를 클라이언트 로컬 포트로 전달
 - 연결을 `start`, `stop`, `status`로 관리
 - 포트 매핑을 `add`, `del`, `list`로 관리
 - `tunnel` 실행 시에만 서버에 Cloudflare Quick Tunnel을 설치하고 외부 HTTPS URL 생성
@@ -22,19 +64,11 @@ KADAP 개발 서버의 포트를 안전하게 연결하고, 필요할 때 외부
 
 ![tailcat status 예시](docs/tailcat-status.svg)
 
-## 설치
+## 클라이언트–서버 동작 과정
 
-```bash
-install -d -m 755 ~/.local/bin
-install -m 755 tailcat ~/.local/bin/tailcat
-export PATH="$HOME/.local/bin:$PATH"
-```
+![클라이언트와 원격 서버의 포트 흐름](docs/client-server-flow.svg)
 
-연결 설정은 다음으로 생성합니다.
-
-```bash
-tailcat setup
-```
+클라이언트의 `tailcat`이 원격 서버의 Tailcat 주소로 암호화된 연결을 만들고, 로컬 포트를 원격 서비스 포트로 전달합니다. `tunnel`은 원격 서버에서 실행되어 서버의 HTTP 포트를 Cloudflare 네트워크를 통해 임시 공개 HTTPS 주소로 연결합니다.
 
 ## 사용법
 
