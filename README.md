@@ -10,7 +10,7 @@
 - `tunnel` 사용 시 원격 서버의 `sudo` 권한과 인터넷 연결
 - Quick Tunnel은 테스트용 공개 주소이므로 운영 인증 수단으로 사용하지 않음
 
-## Setup 절차
+## 실행 절차
 
 1. 클라이언트에 저장소를 내려받고 저장소 디렉터리로 이동합니다.
 
@@ -26,6 +26,8 @@
    install -m 755 tailcat ~/.local/bin/tailcat
    export PATH="$HOME/.local/bin:$PATH"
    ```
+
+   위 세 단계는 `tailcat install`으로도 실행할 수 있습니다. `tailcat uninstall`은 설치된 `~/.local/bin/tailcat` 파일을 제거합니다. 현재 셸의 `PATH` 변수는 명령이 직접 삭제할 수 없으므로, 언인스톨 후 새 셸을 열거나 `export PATH=...`를 다시 적용해야 합니다.
 
    `tailcat` 파일이 현재 디렉터리에 있는지 확인하려면 다음을 실행합니다.
 
@@ -46,14 +48,41 @@
    tailcat status
    ```
 
-5. 외부 공개가 필요할 때만 Quick Tunnel을 시작합니다. 이때 원격 서버에 `cloudflared`가 없으면 설치합니다.
+5. 현재 포트 매핑을 확인합니다.
+
+   ```bash
+   tailcat list
+   ```
+
+6. 포트를 추가하거나 삭제합니다.
+
+   ```bash
+   tailcat add <remote-port> <local-port>
+   tailcat del <local-port>
+   ```
+
+   `add`는 로컬 포트 점유 여부와 원격 포트 리스닝 여부를 확인한 뒤 매핑을 추가합니다. `del`은 지정한 로컬 매핑을 삭제합니다.
+
+7. 외부 공개가 필요할 때만 Quick Tunnel을 시작합니다. 이때 원격 서버에 `cloudflared`가 없으면 설치합니다.
 
    ```bash
    tailcat tunnel 3000
    tailcat status
    ```
 
-`setup` 단계에서는 원격 서버에 `cloudflared`를 설치하지 않습니다.
+8. 연결 설정을 초기화할 때는 확인 절차가 있는 `reset`을 사용합니다.
+
+   ```bash
+   tailcat reset
+   ```
+
+9. 클라이언트 명령을 제거할 때는 `uninstall`을 사용합니다.
+
+   ```bash
+   tailcat uninstall
+   ```
+
+`setup` 단계에서는 원격 서버에 `cloudflared`를 설치하지 않습니다. `tunnel`을 실행할 때만 설치합니다.
 
 ## 목적
 
@@ -92,7 +121,9 @@ tailcat list                    포트 매핑 목록
 tailcat add <remote> <local>   원격 포트 추가 및 로컬 매핑
 tailcat del <local>             로컬 매핑 제거
 tailcat tunnel [remote-port]   외부 Quick Tunnel 생성 (기본 3000)
-tailcat reset                   확인 후 연결 설정 초기화
+tailcat reset                  확인 후 연결 설정 초기화
+tailcat install                ~/.local/bin/tailcat 설치
+tailcat uninstall              ~/.local/bin/tailcat 제거
 ```
 
 예시:

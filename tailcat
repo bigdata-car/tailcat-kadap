@@ -42,6 +42,8 @@ Usage:
   tailcat del <local>            Remove a saved local-to-remote port mapping.
   tailcat reset [connection]     Remove one saved connection and its server service.
   tailcat tunnel [remote-port]   Publish a server port through a Cloudflare Quick Tunnel.
+  tailcat install                 Install this executable into ~/.local/bin.
+  tailcat uninstall               Remove ~/.local/bin/tailcat.
 
 If no connection is supplied, the only saved connection is selected.
 `add`, `del`, and `reset` ask for the server SSH/sudo password when needed.
@@ -348,6 +350,33 @@ REMOTE
   echo "Tunnel session started: $TUNNEL_URL"
 }
 
+install_self() {
+  echo "설치 중: ~/.local/bin 디렉터리 확인..."
+  install -d -m 755 "$CLIENT_BIN_DIR"
+  if [[ "$SCRIPT_PATH" != "$CLIENT_BIN_DIR/tailcat" ]]; then
+    echo "설치 중: $SCRIPT_PATH -> $CLIENT_BIN_DIR/tailcat"
+    install -m 755 "$SCRIPT_PATH" "$CLIENT_BIN_DIR/tailcat"
+  else
+    echo "확인 완료: 이미 ~/.local/bin/tailcat에서 실행 중입니다."
+  fi
+  echo '현재 셸에서 PATH를 적용하려면 다음을 실행하세요:'
+  echo 'export PATH="$HOME/.local/bin:$PATH"'
+  echo "설치 완료: $CLIENT_BIN_DIR/tailcat"
+}
+
+uninstall_self() {
+  echo "확인 중: 설치된 실행 파일..."
+  if [[ -e "$CLIENT_BIN_DIR/tailcat" || -L "$CLIENT_BIN_DIR/tailcat" ]]; then
+    echo "삭제 중: $CLIENT_BIN_DIR/tailcat"
+    rm -f "$CLIENT_BIN_DIR/tailcat"
+    echo "언인스톨 완료: ~/.local/bin/tailcat를 제거했습니다."
+  else
+    echo "삭제할 ~/.local/bin/tailcat가 없습니다."
+  fi
+  echo '현재 셸의 PATH는 자동으로 바뀌지 않습니다. 필요하면 다음을 실행하세요:'
+  echo 'export PATH="$HOME/.local/bin:$PATH"'
+}
+
 run_control_command() {
   local command="$1"
   shift
@@ -360,6 +389,9 @@ run_control_command() {
       load_connection
       "${command}_mapping" "$@"
       ;;
+    install|uninstall)
+      "${command}_self"
+      ;;
     tunnel)
       load_connection
       tunnel_connection "$@"
@@ -368,7 +400,7 @@ run_control_command() {
 }
 
 case "${1:-}" in
-  start|stop|status|list|add|del|reset|tunnel)
+  start|stop|status|list|add|del|reset|tunnel|install|uninstall)
     run_control_command "$@"
     exit 0
     ;;
