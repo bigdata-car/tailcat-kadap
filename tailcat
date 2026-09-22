@@ -350,7 +350,38 @@ REMOTE
   echo "Tunnel session started: $TUNNEL_URL"
 }
 
+install_prerequisites() {
+  local packages=(bash openssh-client sshpass curl jq unzip iproute2 ca-certificates tar)
+  local missing=()
+  local package command
+  declare -A package_commands=(
+    [bash]=bash [openssh-client]=ssh [sshpass]=sshpass [curl]=curl
+    [jq]=jq [unzip]=unzip [iproute2]=ss [tar]=tar
+  )
+  for package in "${packages[@]}"; do
+    command="${package_commands[$package]:-}"
+    if [[ -n "$command" ]]; then
+      command -v "$command" >/dev/null 2>&1 || missing+=("$package")
+    elif ! dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -q 'install ok installed'; then
+      missing+=("$package")
+    fi
+  done
+  if (( ${#missing[@]} == 0 )); then
+    echo "확인 완료: 필요한 클라이언트 패키지가 모두 설치되어 있습니다."
+    return
+  fi
+  command -v sudo >/dev/null 2>&1 || die "필수 패키지 설치에 sudo가 필요합니다: ${missing[*]}"
+  echo "설치 중: 누락된 클라이언트 패키지: ${missing[*]}"
+  sudo apt-get update
+  sudo apt-get install -y "${missing[@]}"
+  for package in "${missing[@]}"; do
+    command -v "$package" >/dev/null 2>&1 || die "패키지 설치 후에도 명령을 찾을 수 없습니다: $package"
+  done
+  echo "설치 완료: 클라이언트 패키지"
+}
+
 install_self() {
+  install_prerequisites
   echo "설치 중: ~/.local/bin 디렉터리 확인..."
   install -d -m 755 "$CLIENT_BIN_DIR"
   if [[ "$SCRIPT_PATH" != "$CLIENT_BIN_DIR/tailcat" ]]; then

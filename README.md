@@ -29,6 +29,8 @@
 
    위 세 단계는 `tailcat install`으로도 실행할 수 있습니다. `tailcat uninstall`은 설치된 `~/.local/bin/tailcat` 파일을 제거합니다. 현재 셸의 `PATH` 변수는 명령이 직접 삭제할 수 없으므로, 언인스톨 후 새 셸을 열거나 `export PATH=...`를 다시 적용해야 합니다.
 
+`tailcat install`은 `bash`, `openssh-client`, `sshpass`, `curl`, `jq`, `unzip`, `iproute2`, `ca-certificates`, `tar` 패키지도 확인합니다. 누락된 패키지가 있으면 `sudo apt-get update`와 `sudo apt-get install -y ...`로 먼저 설치합니다.
+
    `tailcat` 파일이 현재 디렉터리에 있는지 확인하려면 다음을 실행합니다.
 
    ```bash
