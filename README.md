@@ -12,30 +12,41 @@
 
 ## Setup 절차
 
-1. 클라이언트에 저장소를 내려받고 실행 파일을 설치합니다.
+1. 클라이언트에 저장소를 내려받고 저장소 디렉터리로 이동합니다.
 
    ```bash
    git clone https://github.com/bigdata-car/tailcat-kadap.git
    cd tailcat-kadap
+   ```
+
+2. `~/.local/bin` 디렉터리를 만들고 `tailcat` 실행 파일을 복사합니다. 첫 번째 명령은 디렉터리만 만들며 실행 파일을 설치하지 않습니다.
+
+   ```bash
    install -d -m 755 ~/.local/bin
    install -m 755 tailcat ~/.local/bin/tailcat
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
-2. 클라이언트에서 원격 서버 연결을 설정합니다.
+   `tailcat` 파일이 현재 디렉터리에 있는지 확인하려면 다음을 실행합니다.
+
+   ```bash
+   ls -l ./tailcat
+   ```
+
+3. 클라이언트에서 원격 서버 연결을 설정합니다.
 
    ```bash
    tailcat setup
    ```
 
-3. 설정된 포워더를 시작하고 상태를 확인합니다.
+4. 설정된 포워더를 시작하고 상태를 확인합니다.
 
    ```bash
    tailcat start
    tailcat status
    ```
 
-4. 외부 공개가 필요할 때만 Quick Tunnel을 시작합니다. 이때 원격 서버에 `cloudflared`가 없으면 설치합니다.
+5. 외부 공개가 필요할 때만 Quick Tunnel을 시작합니다. 이때 원격 서버에 `cloudflared`가 없으면 설치합니다.
 
    ```bash
    tailcat tunnel 3000
